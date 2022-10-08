@@ -42,5 +42,5 @@ jobs:
           export VERSION=1.0.0.2
           date -u +%Y%m%d%H%M%S
           export VERSIONDT=1.0.0.$(date -u +%Y%m%d%H%M%S)
-          echo echo v$VERSION
-          echo echo v$VERSIONDT
+          echo v$VERSION
+          echo v$VERSIONDT
