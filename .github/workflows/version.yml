@@ -22,7 +22,7 @@ jobs:
   build:
     needs: version
     runs-on: ubuntu-latest
-    env:
+    strategy:
       VERSION: ${{ needs.version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
