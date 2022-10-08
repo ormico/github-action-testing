@@ -12,6 +12,8 @@ env:
 jobs:
   version:
     runs-on: ubuntu-latest
+    env:
+      version: ${{ steps.set-version.outputs.version }}
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
