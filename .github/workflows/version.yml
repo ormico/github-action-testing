@@ -24,6 +24,8 @@ jobs:
   build:
     needs: version
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Run a multi-line script
