@@ -21,6 +21,10 @@ jobs:
           echo $V
           echo "v$V"
           echo "::set-output name=version::$V"
+      - name: read-version
+        run: |
+          echo "read-version v$version"
+          echo "read-version v${{ steps.set-version.outputs.version }}"
   build:
     needs: version
     runs-on: ubuntu-latest
