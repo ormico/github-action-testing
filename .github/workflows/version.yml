@@ -12,17 +12,11 @@ env:
 jobs:
   version:
     runs-on: ubuntu-latest
-    env:
-      version: abcd
     outputs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       - name: set-version
-        run: |
-          export V=1.0.0.$(date -u +%Y%m%d%H%M%S)
-          echo $V
-          echo "v$V"
-          echo "::set-output name=version::$V"
+        run: echo "::set-output name=version::1.0.0.$(date -u +%Y%m%d%H%M%S)"
       - name: read-version
         run: |
           echo "read-version v$version"
