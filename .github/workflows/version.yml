@@ -18,6 +18,8 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       - name: set-version
+        outputs:
+          version
         run: |
           export V=1.0.0.$(date -u +%Y%m%d%H%M%S)
           echo $V
