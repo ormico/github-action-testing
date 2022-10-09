@@ -15,7 +15,7 @@ jobs:
     outputs:
       version: ${{ steps.setVersion.outputs.version }}
     steps:
-      - name: setVersion
+      - id: setVersion
         run: echo "::set-output name=version::1.0.0.$(date -u +%Y%m%d%H%M%S)"
       - name: readVersion
         run: |
