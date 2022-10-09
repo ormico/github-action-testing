@@ -13,14 +13,14 @@ jobs:
   version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.set-version.outputs.version }}
+      version: ${{ steps.setVersion.outputs.version }}
     steps:
-      - name: set-version
+      - name: setVersion
         run: echo "::set-output name=version::1.0.0.$(date -u +%Y%m%d%H%M%S)"
-      - name: read-version
+      - name: readVersion
         run: |
-          echo "read-version v$version"
-          echo "read-version v${{ steps.set-version.outputs.version }}"
+          echo "readVersion v$version"
+          echo "readVersion v${{ steps.setVersion.outputs.version }}"
   build:
     needs: version
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
           echo line 1
           echo line 2
       - name: version
-        run: echo v$VERSION
+        run: echo v${{ needs.version.outputs.version }}
 
   job1:
     runs-on: ubuntu-latest
@@ -46,6 +46,8 @@ jobs:
         run: echo "::set-output name=test::hello"
       - id: step2
         run: echo "::set-output name=test::world"
+      - id: step3
+        run: echo "step3  ${{ steps.step2.outputs.test }}"
   job2:
     runs-on: ubuntu-latest
     needs: job1
