@@ -37,6 +37,5 @@ jobs:
       - name: Build and publish the application and Docker image
         run: |
           IMAGE_TAG=$(echo ${{ github.ref_name }} | sed 's/release\///')
-          dotnet publish src/WebApplication1.sln -c Release -o out
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:$IMAGE_TAG .
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:$IMAGE_TAG
+          dotnet publish src/SimpleWeatherList.Web/SimpleWeatherList.Web.csproj -c Release -p:PublishProfile=DefaultContainer -p:ContainerRepository=ghcr.io/${{ github.repository_owner }}/simpleweatherlist.web:$IMAGE_TAG 
+          docker push ghcr.io/${{ github.repository_owner }}/simpleweatherlist.web:$IMAGE_TAG
