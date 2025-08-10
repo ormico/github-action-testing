@@ -33,17 +33,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Builds and publishes the .NET application
-      - name: Build and publish the application
+      # Builds and publishes the .NET application and Docker image
+      - name: Build and publish the application and Docker image
         run: |
-          dotnet publish -c Release -o out
-
-      # Builds the Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest .
-
-      # Pushes the Docker image to the GitHub Container Registry
-      - name: Push Docker image to GitHub Container Registry
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          IMAGE_TAG=$(echo ${{ github.ref_name }} | sed 's/release\///')
+          dotnet publish src/WebApplication1.sln -c Release -o out
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:$IMAGE_TAG .
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:$IMAGE_TAG
