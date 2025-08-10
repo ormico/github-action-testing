@@ -7,6 +7,8 @@
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:8.0</ContainerBaseImage>
     <UserSecretsId>4bddf6d2-56ad-4867-8ae7-fcdb1bb433f7</UserSecretsId>
+    <AssemblyName>SimpleWeatherList.Web</AssemblyName>
+    <RootNamespace>SimpleWeatherList.Web</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
