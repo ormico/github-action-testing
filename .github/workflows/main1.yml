@@ -38,4 +38,4 @@ jobs:
         run: |
           IMAGE_TAG=$(echo ${{ github.ref_name }} | sed 's/release\///')
           echo $IMAGE_TAG
-          dotnet publish src/SimpleWeatherList.Web/SimpleWeatherList.Web.csproj -c Release -p:PublishProfile=DefaultContainer  -p:ContainerRegistry=ghcr.io -p:ContainerRepository=${{ github.repository_owner }}/simpleweatherlist.web -p:ContainerImageTag=v$IMAGE_TAG -v d
+          dotnet publish src/SimpleWeatherList.Web/SimpleWeatherList.Web.csproj -c Release -p:PublishProfile=DefaultContainer  -p:ContainerRegistry=ghcr.io -p:ContainerRepository=${{ github.repository_owner }}/simpleweatherlist.web -p:ContainerImageTag=v$IMAGE_TAG
