@@ -2,6 +2,8 @@
 
 A minimal ASP.NET Core 8 web app that displays a weather forecast using a JavaScript-powered table.
 
+Look in the Wiki for Notes and Documentation.
+
 ## Prerequisites
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Docker](https://www.docker.com/get-started) (for containerization)
