@@ -12,8 +12,6 @@ After each phase or iteration, requirements may be clarified, changed, or added 
 
 Record the current and completed phases so that Copilot knows where to pick up with each session. 
 
-
-
 ## Preliminary Requirements
 
 ### Preliminary Technical Requirements
@@ -109,21 +107,30 @@ Suggest next phases in Design Document.
 
 Detailed planning for core build pipeline
 
-* Q-001: Test Scope - Accept recommendation.
-* Q-002: Version Increment Strategy - Accept recommendation. Plan implement validation.
-* Q-003: Version Format - Accept recommendation.
-* Q-004: Preview Version Collision Avoidance - Accept recommendation. Will this be injected automatically into build by Github Action? For example, as VersionSuffix?
-* Q-005: Release Branch Creation - Accept recommendation.
-* Q-006: Release Branch Naming - Accept recommendation.
-* Q-007: Hotfix Merge Strategy - Accept recommendation.
+1. Design for FR-009.
+1. Design for FR-011.
+2. Q-007: Hotfix Merge Strategy - Recommendation seems logical, but please describe in the design document how the process would work. If a Hotfix branch is created from the previous Release branch then how will the hotfix be validated and tested? Normal main branch development requires a PR with validation and approval. If a new Release branch is created from the Hotfix branch it seems like we would not have a PR involved in that process but I believe a PR should be involved so that we get tracking and peer review.
+3. How should changes to requirements be handled? I added several new Functional requirements based on recommendations to previous questions I had asked.
 
-# Repository Setup
+## Repository Setup
 
 Initial repository configuration.
 
 We already have a repository (this one). Perform any other setup tasks for this repository.
 
-# Pull Request Development Start
+Document how to setup the next repositories.
+
+I ran setup-repository.ps1 but I didn't see any branch rules setup. Shouldn't there be branch rules?
+
+Should the setup-repository.ps1 be under the .github folder? 
+
+## Pull Request Development Start
 
 Implement Pull Request.
 Include Version validation.
+
+# Phase 2 - Implement Pull Request GitHub Actions
+
+# Phase 3 - Unplanned
+
+Plans for Phase 3 will go here.

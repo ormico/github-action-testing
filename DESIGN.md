@@ -175,16 +175,39 @@ graph TD
 - **Secrets Management**: Configure deployment secrets
 - **Registry Access**: Configure GitHub Container Registry permissions
 
-#### Automated Setup Script
-PowerShell script to configure repository:
+#### Repository Setup Script Location and Usage
+
+**Script Location:** `scripts/setup-repository.ps1` (organized in dedicated scripts folder)
+
+The setup script is located in the `scripts/` folder at the repository root for optimal organization and accessibility.
+
+**Enhanced Features:**
+- **Improved Error Handling**: Better feedback when branch protection setup fails
+- **Authentication Validation**: Checks GitHub CLI authentication before proceeding
+- **Dry Run Mode**: Test configuration without making changes
+- **Manual Fallback Instructions**: Detailed guidance when automated setup fails
+- **Enhanced API Integration**: More robust GitHub API calls with proper error handling
+
+**Usage Examples:**
 ```powershell
-# setup-repository.ps1
-- Configure branch protection rules
-- Create GitHub Environments
-- Set up required secrets
-- Configure GitHub Container Registry
-- Install required GitHub Apps/integrations
+# Normal execution (recommended)
+.\scripts\setup-repository.ps1
+
+# Test what would be configured without making changes
+.\scripts\setup-repository.ps1 -DryRun
+
+# Specify repository explicitly if needed
+.\scripts\setup-repository.ps1 -Owner "myorg" -RepositoryName "myrepo"
 ```
+
+**Documentation:**
+- **[User Guide](docs/SETUP-SCRIPT-USER-GUIDE.md)** - How to use the setup script
+- **[Developer Guide](docs/SETUP-SCRIPT-DEVELOPER.md)** - Technical implementation details
+
+**Troubleshooting Common Issues:**
+- **Branch Protection Not Applied**: Script provides manual setup instructions
+- **Authentication Errors**: Validates GitHub CLI authentication status
+- **Permission Issues**: Checks repository admin permissions before attempting setup
 
 ## Implementation Phases
 

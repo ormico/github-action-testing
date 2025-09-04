@@ -66,14 +66,33 @@ This document contains the official requirements for the Build, Release, and Dep
    - Staging must succeed before Production deployment (if Staging configured)
 
 ### FR-006: Release Management
-- **Release Creation**: Manual process or automated trigger (to be defined)
 - **Release Branch Naming**: Increment-based or datetime-based (not version-based)
-- **Naming Enforcement**: GitHub settings or Actions to enforce naming requirements
+- **Naming Enforcement**: A manually executed GitHub Action will create the release branch according to our naming and other criteria. 
 
 ### FR-007: Hotfix Process
 - **Hotfix Branches**: Created from target Release branch for bug fixes
 - **Merge Strategy**: Define whether hotfix merges back to Release branch or creates new release branch
 - **Process Enforcement**: Document and enforce via GitHub Actions
+
+### FR-008: Testing Environment Process
+- **Unit Test Execution**: Unit Tests should run in PR builds. 
+- **Integration Test Execution**: E2E, UI, and Integration tests should run in Testing environment due to longer execution time and infrastructure requirements.
+
+### FR-009: Version Increment Process
+- **Manual Version Increment**: Require manual version increment in PRs. 
+- **Automated Version Increment Check**: Automated validation on PR build that version was updated appropriately.
+
+### FR-010: Version Format
+- **4-segment**: Use 4-segment versioning (Major.Minor.Patch.Build) where Build auto-increments, aligning with .NET conventions. 
+
+### FR-011: Preview Version Collision Avoidance
+**Preview Branch Suffix**: Avoid preview version collisions between branches by including branch identifier in preview suffix: `-preview-{branch-hash}-{increment}`
+
+### FR-012: Release Branch Naming
+- **Date-based naming**: Date-based naming: `release/YYYY-MM-DD-{increment}` for traceability and sorting.
+
+### FR-013: Hotfix Merge Strategy
+- **Release Branch**: Create new release branch from hotfix for clean release history and proper versioning.
 
 ## Documentation Requirements
 
@@ -108,6 +127,9 @@ This document contains the official requirements for the Build, Release, and Dep
 ### Q-003: Version Format
 **Question**: 3-segment vs 4-segment versioning?
 **Recommendation**: Use 4-segment versioning (Major.Minor.Patch.Build) where Build auto-increments, aligning with .NET conventions.
+
+**MODIFIED** 3 Aug 2025
+Accept recommendation.
 
 ### Q-004: Preview Version Collision Avoidance
 **Question**: How to avoid preview version collisions between branches?

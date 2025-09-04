@@ -40,10 +40,10 @@ Edit `version.json` to match your project's current version:
 ### Option A: Automated Setup (Recommended)
 ```powershell
 # Run from repository root (Windows/PowerShell)
-.\.github\scripts\setup-repository.ps1
+.\scripts\setup-repository.ps1
 
 # Or for dry run first:
-.\.github\scripts\setup-repository.ps1 -DryRun
+.\scripts\setup-repository.ps1 -DryRun
 ```
 
 ### Option B: Manual Setup

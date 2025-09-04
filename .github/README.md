@@ -38,6 +38,10 @@ The CI/CD pipeline implements a modern DevOps workflow with the following compon
 - ✅ Security scanning for previews
 - ✅ Branch-specific version suffixes
 
+📖 **Documentation**: 
+- **[User Guide](../docs/FEATURE-BUILD-USER-GUIDE.md)** - How to use feature builds
+- **[Developer Guide](../docs/FEATURE-BUILD-DEVELOPER.md)** - Technical implementation details
+
 #### 3. Release Creation (`release-create.yml`)
 **Trigger**: Push to `release/*` branches
 
@@ -86,10 +90,10 @@ The CI/CD pipeline implements a modern DevOps workflow with the following compon
 2. **Configure repository settings** using the provided script:
    ```powershell
    # Run from repository root
-   .\.github\scripts\setup-repository.ps1
+   .\scripts\setup-repository.ps1
    
    # For dry run to see what would be configured:
-   .\.github\scripts\setup-repository.ps1 -DryRun
+   .\scripts\setup-repository.ps1 -DryRun
    ```
 
 3. **Initialize version management**:
