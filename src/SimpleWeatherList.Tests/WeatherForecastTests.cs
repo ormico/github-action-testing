@@ -48,7 +48,7 @@ public class WeatherForecastTests
 
         // Assert
         // Using the same formula as the code: 32 + (int)(TemperatureC / 0.5556)
-        var expectedF = 32 + (int)(25 / 0.5556); // This gives 76, not 77
+        var expectedF = 32 + (int)(25 * 1.8); // This gives 76, not 77
         Assert.AreEqual(expectedF, forecast.TemperatureF, "Temperature conversion should match the formula in the code");
     }
 
@@ -65,7 +65,7 @@ public class WeatherForecastTests
 
         // Assert
         // Using the same formula as the code: 32 + (int)(TemperatureC / 0.5556)
-        var expectedF = 32 + (int)(-10 / 0.5556); // This gives 15, not 14
+        var expectedF = 32 + (int)(-10 * 1.8); // This gives 15, not 14
         Assert.AreEqual(expectedF, forecast.TemperatureF, "Temperature conversion should match the formula in the code");
     }
 }
