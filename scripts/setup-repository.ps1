@@ -66,10 +66,20 @@ function Set-BranchProtection {
     
     Write-Host "Configuring branch protection for '$Branch'..."
     
+    # Format checks for GitHub API
+    $formattedChecks = @()
+    foreach ($check in $RequiredChecks) {
+        if ($check -is [string]) {
+            $formattedChecks += @{ context = $check }
+        } else {
+            $formattedChecks += $check
+        }
+    }
+    
     $protection = @{
         required_status_checks = @{
             strict = $true
-            checks = $RequiredChecks
+            checks = $formattedChecks
         }
         enforce_admins = $false
         required_pull_request_reviews = @{
@@ -90,17 +100,30 @@ function Set-BranchProtection {
     }
     else {
         try {
+            # First, ensure the branch exists
+            $branchExists = gh api repos/$Owner/$RepositoryName/branches/$Branch 2>$null
+            if (-not $branchExists) {
+                Write-Warning "Branch '$Branch' does not exist. Branch protection will be applied when branch is created."
+                return
+            }
+            
             # Use GitHub CLI to set branch protection
             $tempFile = [System.IO.Path]::GetTempFileName()
             $protectionJson | Out-File -FilePath $tempFile -Encoding UTF8
             
-            gh api repos/$Owner/$RepositoryName/branches/$Branch/protection -X PUT --input $tempFile
+            $result = gh api repos/$Owner/$RepositoryName/branches/$Branch/protection -X PUT --input $tempFile 2>&1
             Remove-Item $tempFile
             
-            Write-Host "✓ Branch protection configured for '$Branch'"
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✓ Branch protection configured for '$Branch'"
+            } else {
+                Write-Warning "Branch protection may need manual configuration for '$Branch'"
+                Write-Host "Error details: $result"
+            }
         }
         catch {
             Write-Error "❌ Failed to configure branch protection for '$Branch': $_"
+            Write-Host "You may need to configure branch protection manually in GitHub repository settings"
         }
     }
 }
@@ -136,10 +159,15 @@ function New-GitHubEnvironment {
             $tempFile = [System.IO.Path]::GetTempFileName()
             $environmentJson | Out-File -FilePath $tempFile -Encoding UTF8
             
-            gh api repos/$Owner/$RepositoryName/environments/$EnvironmentName -X PUT --input $tempFile
+            $result = gh api repos/$Owner/$RepositoryName/environments/$EnvironmentName -X PUT --input $tempFile 2>&1
             Remove-Item $tempFile
             
-            Write-Host "✓ Environment '$EnvironmentName' configured"
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✓ Environment '$EnvironmentName' configured"
+            } else {
+                Write-Warning "Environment creation may need manual setup for '$EnvironmentName'"
+                Write-Host "Error details: $result"
+            }
         }
         catch {
             Write-Error "❌ Failed to create environment '$EnvironmentName': $_"
@@ -170,10 +198,15 @@ function Set-RepositorySettings {
             $tempFile = [System.IO.Path]::GetTempFileName()
             $settingsJson | Out-File -FilePath $tempFile -Encoding UTF8
             
-            gh api repos/$Owner/$RepositoryName -X PATCH --input $tempFile
+            $result = gh api repos/$Owner/$RepositoryName -X PATCH --input $tempFile 2>&1
             Remove-Item $tempFile
             
-            Write-Host "✓ Repository settings configured"
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✓ Repository settings configured"
+            } else {
+                Write-Warning "Repository settings may need manual configuration"
+                Write-Host "Error details: $result"
+            }
         }
         catch {
             Write-Error "❌ Failed to configure repository settings: $_"
@@ -203,14 +236,44 @@ function Set-ActionsPermissions {
             $tempFile = [System.IO.Path]::GetTempFileName()
             $permissionsJson | Out-File -FilePath $tempFile -Encoding UTF8
             
-            gh api repos/$Owner/$RepositoryName/actions/permissions -X PUT --input $tempFile
+            $result = gh api repos/$Owner/$RepositoryName/actions/permissions -X PUT --input $tempFile 2>&1
             Remove-Item $tempFile
             
-            Write-Host "✓ GitHub Actions permissions configured"
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✓ GitHub Actions permissions configured"
+            } else {
+                Write-Warning "Actions permissions may need manual configuration"
+                Write-Host "Error details: $result"
+            }
         }
         catch {
             Write-Error "❌ Failed to configure Actions permissions: $_"
         }
+    }
+}
+
+# Test if branch protection can be applied
+function Test-BranchProtectionSetup {
+    Write-Host "Testing branch protection setup requirements..."
+    
+    # Check if we have admin permissions
+    try {
+        gh api repos/$Owner/$RepositoryName --jq '.permissions' > $null
+        Write-Host "Repository permissions check completed"
+    }
+    catch {
+        Write-Warning "Cannot verify repository permissions. You may need admin access to set up branch protection."
+    }
+    
+    # Check if main branch exists
+    try {
+        $mainBranch = gh api repos/$Owner/$RepositoryName/branches/main 2>$null
+        if ($mainBranch) {
+            Write-Host "✓ Main branch exists and can have protection applied"
+        }
+    }
+    catch {
+        Write-Warning "Main branch may not exist yet. Branch protection will be applied when main branch is created."
     }
 }
 
@@ -233,6 +296,9 @@ if ($DryRun) {
 }
 Write-Host ""
 
+# Test setup requirements
+Test-BranchProtectionSetup
+
 # Configure repository settings
 Set-RepositorySettings
 
@@ -240,14 +306,14 @@ Set-RepositorySettings
 Set-ActionsPermissions
 
 # Configure branch protection for main branch
-$mainBranchChecks = @(
-    @{ context = "build-and-test" },
-    @{ context = "security-scan" },
-    @{ context = "version-check" }
-)
+Write-Host ""
+Write-Host "Setting up branch protection rules..."
+$mainBranchChecks = @("build-and-test", "security-scan", "version-check")
 Set-BranchProtection -Branch "main" -RequiredChecks $mainBranchChecks
 
 # Create environments
+Write-Host ""
+Write-Host "Creating GitHub environments..."
 New-GitHubEnvironment -EnvironmentName "development" -WaitTimer 0
 New-GitHubEnvironment -EnvironmentName "testing" -WaitTimer 0
 New-GitHubEnvironment -EnvironmentName "staging" -WaitTimer 300  # 5 minute wait
@@ -257,13 +323,28 @@ Write-Host ""
 Write-Host "=== Repository Setup Complete ==="
 Write-Host ""
 Write-Host "Next steps:"
-Write-Host "1. Review the configured branch protection rules"
+Write-Host "1. Verify branch protection rules in GitHub repository settings"
 Write-Host "2. Configure environment reviewers if needed:"
-Write-Host "   gh api repos/$Owner/$RepositoryName/environments/production/deployment-protection-rules"
-Write-Host "3. Add any required secrets for deployments"
-Write-Host "4. Test the CI/CD workflows"
+Write-Host "   Go to Settings > Environments > [environment] > Add reviewers"
+Write-Host "3. Add any required secrets for deployments:"
+Write-Host "   Go to Settings > Secrets and variables > Actions"
+Write-Host "4. Test the CI/CD workflows:"
+Write-Host "   - Create a feature branch and PR to test PR workflow"
+Write-Host "   - Use Actions tab to run feature build workflow"
+Write-Host "   - Create a release branch to test release workflow"
 Write-Host ""
 
 if ($DryRun) {
     Write-Host "Note: This was a dry run. Re-run without -DryRun to apply changes."
+    Write-Host "Command: .\setup-repository.ps1"
 }
+
+Write-Host ""
+Write-Host "If branch protection rules were not applied automatically,"
+Write-Host "you can configure them manually in GitHub:"
+Write-Host "1. Go to Settings > Branches"
+Write-Host "2. Add rule for 'main' branch"
+Write-Host "3. Enable: 'Require pull request reviews'"
+Write-Host "4. Enable: 'Require status checks to pass before merging'"
+Write-Host "5. Add status checks: build-and-test, security-scan, version-check"
+Write-Host "6. Enable: 'Require branches to be up to date before merging'"
